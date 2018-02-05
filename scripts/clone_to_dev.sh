@@ -22,6 +22,11 @@ copy_files() {
     echo "Copying files..."
     rm -rf $DEV_NEW
     cp -rp $PROD $DEV_NEW
+
+    local ROBOTS=$DEV_NEW/robots.txt
+    rm -f $ROBOTS
+    echo 'User-agent: *' >>$ROBOTS
+    echo 'Disallow: /' >>$ROBOTS
 }
 
 init_mysql_users() {
