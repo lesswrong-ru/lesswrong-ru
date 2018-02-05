@@ -127,6 +127,10 @@ fix_configs() {
     fix_forum_config
 }
 
+patch_db() {
+    mysql -u"lw_dev" -p"$DEV_PASSWORD" lw_dev -e "DELETE FROM rules_config WHERE name IN ('rules_slack_notifications_for_new_translations', 'rules_slack_translation_edit', 'rules_email_berekuk_on_new_content')"
+}
+
 copy_nginx() {
     echo "Copying nginx config..."
     local TMP_CONFIG=/tmp/nginx-dev.lesswrong.ru
@@ -160,6 +164,7 @@ commit_files() {
 [[ -z "$SKIP_FILES" ]] && copy_files
 [[ -z "$SKIP_DB" ]] && copy_db
 [[ -z "$SKIP_CONFIGS" ]] && fix_configs
+[[ -z "$SKIP_PATCH_DB" ]] && patch_db
 [[ -z "$SKIP_NGINX" ]] && copy_nginx
 
 check_correctness
