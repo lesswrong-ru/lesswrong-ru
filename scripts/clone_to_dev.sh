@@ -72,8 +72,6 @@ fix_drupal_config() {
     check_file "$USER_LINE" "$FILE"
     check_file "$PASS_LINE" "$FILE"
     check_file "$URL_LINE" "$FILE"
-
-    rm -rf "$DEV_NEW/cache"
 }
 
 fix_wiki_config() {
@@ -143,6 +141,10 @@ copy_nginx() {
     systemctl restart nginx
 }
 
+clear_cache() {
+    cd $DEV_NEW && drush cc all
+}
+
 check_correctness() {
     echo "Checking for correctness.."
     grep -r srv/lesswrong.ru --exclude-dir={files,files-new,survey} "$DEV_NEW" && die "/srv/lesswrong.ru shouldn't be mentioned anywhere!" || true
@@ -166,6 +168,7 @@ commit_files() {
 [[ -z "$SKIP_CONFIGS" ]] && fix_configs
 [[ -z "$SKIP_PATCH_DB" ]] && patch_db
 [[ -z "$SKIP_NGINX" ]] && copy_nginx
+[[ -z "$SKIP_CLEAR_CACHE" ]] && clear_cache
 
 check_correctness
 
