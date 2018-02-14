@@ -147,7 +147,7 @@ copy_nginx() {
 }
 
 clear_cache() {
-    cd $DEV_NEW && drush cc all
+    cd $DEV_NEW && rm -rf cache && drush cc all
 }
 
 check_correctness() {
