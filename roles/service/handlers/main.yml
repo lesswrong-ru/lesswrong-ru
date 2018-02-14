@@ -1,0 +1,5 @@
+- name: restart systemd service {{service}}
+  become_user: root
+  systemd:
+    name: "{{service}}"
+    state: started

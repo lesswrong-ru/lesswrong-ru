@@ -1,0 +1,6 @@
+- name: Add systemd config
+  become_user: root
+  template:
+    src: "{{template}}"
+    dest: /etc/systemd/system/{{service}}.service
+  notify: restart systemd service {{service}}

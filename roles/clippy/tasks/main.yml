@@ -1,0 +1,24 @@
+- name: Fetch code
+  git:
+    repo: "{{lw.clippy.repo}}"
+    dest: "{{lw.clippy.srv}}"
+    accept_hostkey: yes
+  notify:
+    - restart app
+
+- name: Add env config
+  template:
+    src: env
+    dest: "{{lw.clippy.srv}}/env"
+  notify:
+    - restart app
+
+
+- name: Install systemd config
+  include_role:
+    name: service
+  vars:
+    template: systemd
+    service: clippy
+  notify:
+    - restart app

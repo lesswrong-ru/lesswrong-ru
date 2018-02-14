@@ -1,0 +1,7 @@
+- name: Add lw user
+  become_user: root
+  become: yes
+  user:
+    name: lw
+    shell: /bin/bash
+    groups: www-data

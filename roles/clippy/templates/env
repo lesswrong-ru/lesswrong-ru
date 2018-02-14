@@ -1,0 +1,2 @@
+HUBOT_SLACK_TOKEN={{lw.clippy.token}}
+HUBOT_LOG_LEVEL=debug

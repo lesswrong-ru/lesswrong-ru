@@ -1,0 +1,10 @@
+- hosts: production
+  roles:
+    - lw # we need to create the lw user first
+
+- hosts: production
+  become_user: lw
+  become: yes
+
+  roles:
+    - { role: clippy, tags: clippy }
