@@ -13,6 +13,10 @@
   notify:
     - restart app
 
+- name: Install redis
+  become_user: root
+  apt:
+    name: redis-server
 
 - name: Install systemd config
   include_role:
