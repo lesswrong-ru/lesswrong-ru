@@ -1,0 +1,66 @@
+- name: install unzip
+  become_user: root
+  apt:
+    name: unzip
+
+- name: install extensions
+  become_user: root
+  unarchive:
+    remote_src: true
+    src: "{{item}}"
+    dest: "{{lw.wiki.srv}}/extensions"
+  with_items:
+    - https://extdist.wmflabs.org/dist/extensions/Math-REL1_30-e13d2d5.tar.gz
+    - https://extdist.wmflabs.org/dist/extensions/NewestPages-REL1_30-f96960b.tar.gz
+    - https://extdist.wmflabs.org/dist/extensions/MultimediaViewer-REL1_30-2156f3f.tar.gz
+    - https://extdist.wmflabs.org/dist/extensions/CategoryTree-REL1_30-850c018.tar.gz
+    - https://extdist.wmflabs.org/dist/extensions/EditAccount-REL1_30-a6c4e21.tar.gz
+    - https://extdist.wmflabs.org/dist/extensions/MsUpload-REL1_30-7fa7edc.tar.gz
+    - https://extdist.wmflabs.org/dist/extensions/ReplaceText-REL1_30-fbbb4ac.tar.gz
+    - https://extdist.wmflabs.org/dist/extensions/MobileFrontend-REL1_30-e769fbf.tar.gz
+    - https://extdist.wmflabs.org/dist/extensions/InputBox-REL1_30-38433cd.tar.gz
+
+- name: install skins
+  become_user: root
+  unarchive:
+    remote_src: true
+    src: "{{item}}"
+    dest: "{{lw.wiki.srv}}/skins"
+  with_items:
+    - https://extdist.wmflabs.org/dist/skins/MinervaNeue-REL1_30-14d7fdf.tar.gz
+
+- name: install {{item.name}} extension
+  become_user: root
+  include_tasks: extension.yml
+  with_items:
+    - name: SlackNotifications
+      url: https://github.com/kulttuuri/slack_mediawiki/archive/1.11.tar.gz
+      path: slack_mediawiki-1.11/SlackNotifications
+
+    - name: PageForms
+      url: https://github.com/wikimedia/mediawiki-extensions-PageForms/archive/4.3.zip
+      path: mediawiki-extensions-PageForms-4.3
+
+    - name: EmbedVideo
+      url: https://github.com/HydraWiki/mediawiki-embedvideo/archive/2.7.2.tar.gz
+      path: mediawiki-embedvideo-2.7.2
+  tags: wiki-extensions
+
+- name: check if SMW is installed
+  stat:
+    path: "{{lw.wiki.srv}}/extensions/SemanticMediaWiki"
+  register: semantic_mediawiki_dir
+
+- name: install SMW
+  become_user: root
+  when: semantic_mediawiki_dir.stat.exists == False
+  block:
+    - name: install SMW extension
+      command: composer require mediawiki/semantic-media-wiki "~2.5" --update-no-dev
+      args:
+        chdir: "{{lw.wiki.srv}}"
+
+    - name: SMW - maintenance
+      command: php maintenance/update.php --skip-external-dependencies
+      args:
+        chdir: "{{lw.wiki.srv}}"

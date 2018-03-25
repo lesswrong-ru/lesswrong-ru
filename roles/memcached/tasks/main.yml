@@ -1,0 +1,4 @@
+- name: install memcached
+  become_user: root
+  apt:
+    name: memcached

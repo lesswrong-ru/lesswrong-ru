@@ -1,0 +1,11 @@
+- name: create database
+  become_user: root
+  mysql_db:
+    name: "{{db.name}}"
+
+- name: add database user
+  become_user: root
+  mysql_user:
+    name: "{{db.user}}"
+    password: "{{db.password}}"
+    priv: "{{db.name}}.*:ALL"

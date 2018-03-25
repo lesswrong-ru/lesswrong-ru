@@ -1,0 +1,24 @@
+- name: add repository
+  become_user: root
+  apt_repository:
+    repo: 'ppa:ondrej/php'
+    codename: 'xenial'
+
+- name: install
+  become_user: root
+  apt:
+    name: "{{item}}"
+  with_items:
+    - php7.1-fpm
+    - php7.1-gd
+    - php7.1-intl
+    - php7.1-mysql
+    - php7.1-mbstring
+
+- name: increase maximum size for file uploads
+  become_user: root
+  lineinfile:
+    path: /etc/php/7.1/fpm/php.ini
+    regexp: '^upload_max_filesize ='
+    line: 'upload_max_filesize = 10M'
+  notify: restart php-fpm

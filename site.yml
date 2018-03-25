@@ -8,3 +8,4 @@
 
   roles:
     - { role: clippy, tags: clippy }
+    - { role: wiki, tags: wiki }

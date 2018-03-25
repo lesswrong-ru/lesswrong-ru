@@ -1,0 +1,57 @@
+- name: install php deps
+  become_user: root
+  apt:
+    name: php{{lw.wiki.php_version}}-{{item}}
+  with_items:
+    - xml
+    - mysql
+    - gd
+    - intl
+    - curl
+
+- name: create db
+  include_role:
+    name: mysql-db
+  vars:
+    db: "{{lw.wiki.db}}"
+
+- name: check if wiki code exists
+  stat:
+    path: "{{lw.wiki.srv}}/index.php"
+  register: wiki_code_exists
+
+- name: install wiki code
+  when: wiki_code_exists.stat.exists == False
+  block:
+    - name: create temporary directory
+      tempfile:
+        state: directory
+        suffix: mediawiki
+      register: wiki_code
+
+    - name: fetch mediawiki archive
+      unarchive:
+        remote_src: yes
+        src: https://releases.wikimedia.org/mediawiki/{{lw.wiki.version | regex_replace('\.\d+$', '')}}/mediawiki-{{lw.wiki.version}}.tar.gz
+        dest: "{{wiki_code.path}}"
+
+    - name: commit mediawiki archive
+      command: mv "{{wiki_code.path}}/mediawiki-{{lw.wiki.version}}" "{{lw.wiki.srv}}"
+
+- name: add LocalSettings.php
+  become_user: root
+  template:
+    src: LocalSettings.php
+    dest: "{{lw.wiki.srv}}/LocalSettings.php"
+  tags: wiki-settings
+
+- name: install extensions
+  import_tasks: all-extensions.yml
+
+- name: allow images/ access to web server
+  become_user: root
+  file:
+    path: "{{lw.wiki.srv}}/images"
+    recurse: yes
+    owner: www-data
+    group: www-data

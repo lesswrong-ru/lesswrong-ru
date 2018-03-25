@@ -1,0 +1,21 @@
+lw:
+  clippy:
+    repo: https://github.com/lesswrong-ru/clippy.git
+    token: "{{vault.lw.clippy.token}}"
+    srv: /srv/clippy
+
+  wiki:
+    srv: /srv/lesswrong.ru/wiki
+    version: "1.29.0"
+    php_version: "7.1"
+
+    db:
+      name: wiki
+      user: wiki
+      password: "{{vault.lw.wiki.db.password}}"
+
+    secret_key: "{{vault.lw.wiki.secret_key}}"
+
+    extensions:
+      slack_notifications:
+        webhook: "{{ vault.lw.wiki.extensions.slack_notifications.webhook }}"

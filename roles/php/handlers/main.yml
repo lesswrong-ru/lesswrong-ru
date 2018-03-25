@@ -1,0 +1,5 @@
+- name: restart php-fpm
+  become_user: root
+  service:
+    name: php7.1-fpm
+    state: restarted

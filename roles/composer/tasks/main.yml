@@ -1,0 +1,16 @@
+- name: Check if composer is installed
+  stat:
+    path: /usr/local/bin/composer
+  register: composer_stat
+
+- name: Download composer installer
+  when: composer_stat.stat.exists == False
+  become_user: root
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-setup.php
+
+- name: Install composer
+  when: composer_stat.stat.exists == False
+  become_user: root
+  command: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer

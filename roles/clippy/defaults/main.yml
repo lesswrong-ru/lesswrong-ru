@@ -1,5 +1,0 @@
-lw:
-  clippy:
-    repo: https://github.com/lesswrong-ru/clippy.git
-    token: "{{vault.lw.clippy.token}}"
-    srv: /srv/clippy

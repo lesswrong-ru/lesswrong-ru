@@ -1,0 +1,20 @@
+- name: add repo key
+  become_user: root
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: "0xF1656F24C74CD1D8"
+
+- name: add repo
+  become_user: root
+  apt_repository:
+    repo: deb http://mariadb.cu.be/repo/10.2/ubuntu xenial main
+
+- name: install
+  become_user: root
+  apt:
+    name: mariadb-server-10.2
+
+- name: install python support for ansible
+  become_user: root
+  apt:
+    name: python-mysqldb

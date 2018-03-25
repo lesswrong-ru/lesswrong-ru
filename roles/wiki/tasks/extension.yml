@@ -1,0 +1,28 @@
+- name: check if {{item.name}} is installed
+  stat:
+    path: "{{lw.wiki.srv}}/extensions/{{item.name}}"
+  register: extension_dir
+
+- name: temp dir
+  when: extension_dir.stat.exists == False
+  tempfile:
+    state: directory
+    suffix: "{{item.name}}"
+  register: tmpdir
+
+- name: unarchive {{item.name}}
+  when: extension_dir.stat.exists == False
+  unarchive:
+    remote_src: true
+    src: "{{item.url}}"
+    dest: "{{tmpdir.path}}"
+
+- name: move {{item.name}} into the correct location
+  when: extension_dir.stat.exists == False
+  command: mv "{{tmpdir.path}}/{{item.path}}" "{{lw.wiki.srv}}/extensions/{{item.name}}"
+
+- name: "{{item.name}} - maintenance"
+  when: extension_dir.stat.exists == False
+  command: php maintenance/update.php --skip-external-dependencies
+  args:
+    chdir: "{{lw.wiki.srv}}"
