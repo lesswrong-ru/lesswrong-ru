@@ -1,0 +1,10 @@
+- name: install nginx
+  become_user: root
+  apt:
+    name: nginx-extras
+
+- name: Allow Nginx
+  become_user: root
+  ufw:
+    rule: allow
+    name: Nginx Full

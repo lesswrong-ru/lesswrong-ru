@@ -1,0 +1,21 @@
+- name: Fetch lua code
+  become_user: root
+  git:
+    repo: https://github.com/knyar/nginx-lua-prometheus
+    dest: /opt/nginx-lua-prometheus
+    accept_hostkey: yes
+  notify: restart nginx
+
+- name: Enable lua-prometheus
+  become_user: root
+  template:
+    src: lua-prometheus.conf
+    dest: /etc/nginx/conf.d/lua-prometheus.conf
+  notify: restart nginx
+
+- name: Enable lua-prometheus
+  become_user: root
+  template:
+    src: lua-prometheus.conf
+    dest: /etc/nginx/conf.d/lua-prometheus.conf
+  notify: restart nginx

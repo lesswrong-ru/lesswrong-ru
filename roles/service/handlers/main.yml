@@ -2,4 +2,6 @@
   become_user: root
   systemd:
     name: "{{service}}"
+    daemon_reload: true
     state: started
+    enabled: true

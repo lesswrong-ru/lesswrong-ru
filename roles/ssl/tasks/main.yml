@@ -1,0 +1,35 @@
+- name: remove certbot repository
+  become_user: root
+  apt_repository:
+    repo: 'ppa:certbot/certbot'
+    codename: 'xenial'
+    state: absent
+
+- name: remove certbot apt package
+  become_user: root
+  apt:
+    name: certbot
+    state: absent
+    autoremove: yes
+
+- name: install certbot-auto
+  become_user: root
+  get_url:
+    url: https://dl.eff.org/certbot-auto
+    mode: 0700
+    owner: root
+    group: root
+    dest: /srv/certbot-auto
+
+# Temporarily disabled because we use wildcard certificates now and they require Route53 plugin which is not packaged yet.
+
+#- name: check for certificates
+#  become_user: root
+#  stat:
+#    path: /etc/letsencrypt/live/{{domain}}
+#  register: certbot_domain_configured
+#
+#- name: get certificates
+#  become_user: root
+#  command: /srv/certbot-auto certonly --manual --authenticator standalone --installer standalone --non-interactive --agree-tos --email {{certbot_email}} --domain {{domain}} --redirect --pre-hook "service nginx stop" --post-hook "service nginx start"
+#  when: certbot_domain_configured.stat.exists == False

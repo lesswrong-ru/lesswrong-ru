@@ -7,7 +7,7 @@ User=lw
 Restart=always
 WorkingDirectory={{lw.clippy.srv}}
 EnvironmentFile={{lw.clippy.srv}}/env
-ExecStart={{lw.clippy.srv}}/bin/hubot --adapter slack
+ExecStart=/usr/local/bin/pipenv run ./clippy.py
 
 [Install]
 WantedBy=multi-user.target

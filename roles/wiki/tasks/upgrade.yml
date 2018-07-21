@@ -1,0 +1,70 @@
+- name: check if wiki code exists
+  stat:
+    path: "{{lw.wiki.srv}}-new/index.php"
+  register: new_wiki_code_exists
+
+- name: install new wiki code
+  become_user: root
+  when: new_wiki_code_exists.stat.exists == False
+  block:
+    - name: create temporary directory
+      tempfile:
+        state: directory
+        suffix: mediawiki
+      register: wiki_code
+
+    - name: fetch mediawiki archive
+      unarchive:
+        remote_src: yes
+        src: https://releases.wikimedia.org/mediawiki/1.30/mediawiki-1.30.0.tar.gz
+        dest: "{{wiki_code.path}}"
+
+    - name: commit mediawiki archive
+      command: mv "{{wiki_code.path}}/mediawiki-1.30.0" "{{lw.wiki.srv}}-new"
+
+- name: Copy files to new wiki
+  become_user: root
+  synchronize:
+    src: "{{lw.wiki.srv}}/{{item}}"
+    dest: "{{lw.wiki.srv}}-new/{{item}}"
+  delegate_to: "{{ inventory_hostname }}"
+  with_items:
+    - LocalSettings.php
+
+- name: Copy directories to new wiki
+  become_user: root
+  synchronize:
+    src: "{{lw.wiki.srv}}/{{item}}/"
+    dest: "{{lw.wiki.srv}}-new/{{item}}"
+  delegate_to: "{{ inventory_hostname }}"
+  with_items:
+    - images
+    - extensions/CategoryTree
+    - extensions/EmbedVideo
+    - extensions/Math
+    - extensions/NewestPages
+    - extensions/MultimediaViewer
+    - extensions/EditAccount
+    - extensions/MsUpload
+    - extensions/ReplaceText
+    - extensions/MobileFrontend
+    - extensions/InputBox
+    - extensions/SlackNotifications
+    - extensions/PageForms
+    - extensions/SemanticMediaWiki
+    - skins/MinervaNeue
+
+- name: allow images/ access to web server
+  become_user: root
+  file:
+    path: "{{lw.wiki.srv}}-new/images"
+    recurse: yes
+    owner: www-data
+    group: www-data
+
+- name: install logos
+  copy:
+    src: assets/{{ item }}
+    dest: "{{lw.wiki.srv}}/resources/assets/{{ item }}"
+  with_items:
+    - "{{ lw.wiki.logo }}"

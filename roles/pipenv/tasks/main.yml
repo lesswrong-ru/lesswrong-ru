@@ -1,0 +1,25 @@
+- name: Add Python PPA
+  become_user: root
+  apt_repository:
+    repo: 'ppa:deadsnakes/ppa'
+    codename: 'xenial'
+
+- name: Install python3.6
+  become_user: root
+  apt:
+    name: python3.6
+
+- name: Install pip3
+  become_user: root
+  apt:
+    name: python3-pip
+
+- name: Install pipenv
+  become_user: root
+  pip:
+    name: pipenv
+
+- name: Install python deps
+  command: pipenv install
+  args:
+    chdir: "{{dir}}"

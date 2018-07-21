@@ -1,2 +1,3 @@
-HUBOT_SLACK_TOKEN={{lw.clippy.token}}
-HUBOT_LOG_LEVEL=debug
+SLACK_VERIFICATION_TOKEN={{lw.clippy.verification_token}}
+SLACK_WORKPLACE_TOKEN={{lw.clippy.workplace_token}}
+PORT={{lw.clippy.port}}

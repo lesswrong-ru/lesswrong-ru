@@ -1,3 +1,14 @@
+- name: Logging directories
+  become_user: root
+  file:
+    name: "{{item}}"
+    owner: lw
+    group: lw
+    state: directory
+    mode: 0770
+  with_items:
+    - "{{lw.clippy.data}}"
+
 - name: Fetch code
   git:
     repo: "{{lw.clippy.repo}}"
@@ -13,10 +24,12 @@
   notify:
     - restart app
 
-- name: Install redis
-  become_user: root
-  apt:
-    name: redis-server
+- name: Set up a pipenv environment
+  include_role:
+    name: pipenv
+  vars:
+    dir: "{{lw.clippy.srv}}"
+  notify: restart app
 
 - name: Install systemd config
   include_role:
@@ -26,3 +39,10 @@
     service: clippy
   notify:
     - restart app
+
+- name: Install nginx config
+  include_role:
+    name: nginx-site
+  vars:
+    nginx_template: nginx
+    nginx_site: "{{lw.clippy.domain}}"

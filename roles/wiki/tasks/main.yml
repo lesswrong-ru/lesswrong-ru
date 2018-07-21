@@ -48,6 +48,10 @@
 - name: install extensions
   import_tasks: all-extensions.yml
 
+- name: install upgrade
+  import_tasks: upgrade.yml
+  tags: wiki-upgrade
+
 - name: allow images/ access to web server
   become_user: root
   file:

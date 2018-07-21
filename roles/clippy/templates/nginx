@@ -1,0 +1,25 @@
+server {
+  listen 443 ssl;
+  server_name {{lw.clippy.domain}};
+
+  access_log {{lw.clippy.data}}/access.log;
+  error_log {{lw.clippy.data}}/error.log info;
+
+  location / {
+    proxy_pass http://127.0.0.1:{{lw.clippy.port}};
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+
+  ssl_certificate /etc/letsencrypt/live/{{lw.clippy.cert}}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{lw.clippy.cert}}/privkey.pem;
+  include /etc/letsencrypt/options-ssl-nginx.conf;
+  ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
+
+server {
+  listen 80;
+  server_name {{lw.clippy.domain}};
+  return 301 https://$host$request_uri;
+}

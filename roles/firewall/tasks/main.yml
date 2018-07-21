@@ -1,0 +1,11 @@
+- name: Allow SSH
+  become_user: root
+  ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: Reject everything
+  become_user: root
+  ufw:
+    state: enabled
+    policy: reject

@@ -1,0 +1,15 @@
+- name: Add nginx config
+  become_user: root
+  template:
+    src: "{{nginx_template}}"
+    dest: /etc/nginx/sites-available/{{nginx_site}}
+    force: "{{update | default('yes')}}"
+  notify: restart nginx
+
+- name: Enable nginx config
+  become_user: root
+  file:
+    src: /etc/nginx/sites-available/{{nginx_site}}
+    dest: /etc/nginx/sites-enabled/{{nginx_site}}
+    state: link
+  notify: restart nginx
