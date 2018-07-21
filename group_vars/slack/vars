@@ -1,0 +1,7 @@
+lw:
+  slack:
+    elastic:
+      version: 5.0.1
+    srv: /srv/slack-search
+    repo: https://github.com/lesswrong-ru/slack-search.git
+    user: berekuk

@@ -9,3 +9,10 @@
   roles:
     - { role: clippy, tags: clippy }
     - { role: wiki, tags: wiki }
+
+- hosts: slack
+  become_user: berekuk
+  become: yes
+
+  roles:
+    - { role: slack-search, tags: slack }

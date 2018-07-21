@@ -1,0 +1,13 @@
+[Unit]
+Description=Elasticsearch for LW slack
+After=network.target
+
+[Service]
+User={{lw.slack.user}}
+Restart=always
+WorkingDirectory={{lw.slack.srv}}/elastic
+EnvironmentFile={{lw.slack.srv}}/elastic/env
+ExecStart={{lw.slack.srv}}/elastic/elasticsearch-{{lw.slack.elastic.version}}/bin/elasticsearch -Epath.conf=config
+
+[Install]
+WantedBy=multi-user.target

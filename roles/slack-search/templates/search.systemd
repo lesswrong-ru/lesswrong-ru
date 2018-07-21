@@ -1,0 +1,12 @@
+[Unit]
+Description=Node.js backend for LW slack search
+After=network.target
+
+[Service]
+User={{lw.slack.user}}
+Restart=always
+WorkingDirectory={{lw.slack.srv}}/front
+ExecStart=/usr/bin/node {{lw.slack.srv}}/front/app.js
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,36 @@
+- name: Fetch code
+  git:
+    repo: "{{lw.slack.repo}}"
+    dest: "{{lw.slack.srv}}"
+    accept_hostkey: yes
+  notify:
+    - Restart slack-search
+
+- name: Download elasticsearch tar.gz
+  get_url:
+    url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{lw.slack.elastic.version}}.tar.gz
+    dest: "{{lw.slack.srv}}/elastic/elasticsearch-{{lw.slack.elastic.version}}.tar.gz"
+
+- name: Extract elasticsearch archive
+  unarchive:
+    src: "{{lw.slack.srv}}/elastic/elasticsearch-{{lw.slack.elastic.version}}.tar.gz"
+    dest: "{{lw.slack.srv}}/elastic"
+    remote_src: yes
+
+- name: Install systemd config for slack-search
+  include_role:
+    name: service
+  vars:
+    template: search.systemd
+    service: slack-search
+  notify:
+    - Restart slack-search
+
+- name: Install systemd config for slack-elastic
+  include_role:
+    name: service
+  vars:
+    template: elastic.systemd
+    service: slack-elastic
+  notify:
+    - Restart slack-elastic

@@ -1,0 +1,11 @@
+- name: Restart slack-search
+  become_user: root
+  systemd:
+    name: slack-search
+    state: restarted
+
+- name: Restart slack-elastic
+  become_user: root
+  systemd:
+    name: slack-elastic
+    state: restarted
