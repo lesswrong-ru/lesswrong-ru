@@ -124,29 +124,7 @@ server {
     }
 
     location / {
-        try_files $uri $uri/index.html @drupal_cache;
-    }
-
-    # This will try to see if we have a boost file in place. No harm done if this is not used.
-    location @drupal_cache {
-        # queries, drupal cookies, or not GET methods, all require PHP processing.
-        if ($query_string ~ ".+") {
-          return 405;
-        }
-        if ($http_cookie ~ "DRUPAL_UID" ) {
-          return 405;
-        }
-        if ($request_method !~ ^(GET|HEAD)$ ) {
-          return 405;
-        }
-        error_page 405 = @drupal;
-
-        # Drupal uses 1978
-        add_header Expires "Tue, 22 Sep 1974 08:00:00 GMT";
-        add_header Cache-Control "must-revalidate, post-check=0, pre-check=0";
-        add_header X-Cached-By "Boost";
-        try_files /cache/normal/$host/${uri}_.html @drupal;
-        # try_files /cache/normal/$host/${uri}_.html /cache/perm/$host/${uri}_.css /cache/perm/$host/${uri}_.js /cache/$host/0$uri.html /cache/$host/0${uri}/index.html @drupal;
+        try_files $uri $uri/index.html;
     }
 
     location @drupal {
