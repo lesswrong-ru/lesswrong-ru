@@ -6,6 +6,17 @@
   notify:
     - Restart slack-search
 
+- name: Add elastic configs
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - { src: "elastic.env", dest: "{{lw.slack.srv}}/elastic/env" }
+    - { src: "elastic.jvm.options", dest: "{{lw.slack.srv}}/elastic/config/jvm.options" }
+
+  notify:
+    - Restart slack-elastic
+
 - name: Download elasticsearch tar.gz
   get_url:
     url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{lw.slack.elastic.version}}.tar.gz
