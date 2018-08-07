@@ -7,6 +7,7 @@
   become: yes
 
   roles:
+    - { role: nginx, tags: nginx }
     - { role: clippy, tags: clippy }
     - { role: wiki, tags: wiki }
 

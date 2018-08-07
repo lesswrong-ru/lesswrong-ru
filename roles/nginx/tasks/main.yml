@@ -8,3 +8,6 @@
   ufw:
     rule: allow
     name: Nginx Full
+
+- name: Monitoring
+  import_tasks: monitoring.yml
