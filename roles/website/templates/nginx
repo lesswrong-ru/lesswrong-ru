@@ -1,0 +1,198 @@
+# config from ansible
+server {
+    server_name www.lesswrong.ru;
+
+    listen 80;
+    listen 443 ssl;
+
+    ssl_certificate /etc/letsencrypt/live/lesswrong.ru/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/lesswrong.ru/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+
+    return 301 https://lesswrong.ru$request_uri;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    listen 443 ssl;
+
+    # Redirect non-https traffic to https
+    if ($scheme != "https") {
+        return 301 https://$host$request_uri;
+    }
+
+    ssl_certificate /etc/letsencrypt/live/lesswrong.ru/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/lesswrong.ru/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+
+    recursive_error_pages on;
+
+    root /srv/lesswrong.ru;
+    index index.php index.html;
+
+    server_name lesswrong.ru;
+
+
+    gzip_types text/css application/javascript;
+
+    location ~* ^/munin {
+    #        auth_basic            "Restricted";
+    #        auth_basic_user_file  /srv/htpasswd;
+
+            root        /srv/lesswrong.ru/;
+            index       index.html index.htm;
+    }
+
+    location ^~ /calibrator {
+        alias /srv/calibrator/web;
+        location ^~ /calibrator/index.php {
+            fastcgi_param  SCRIPT_FILENAME    /srv/calibrator/web/index.php;
+            include fastcgi_params;
+            fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+        }
+        location ~ \.php$ {
+            deny all;
+        }
+    }
+
+    # Hide all dotted files and directories such as .git or .htaccess
+    # See: https://stackoverflow.com/questions/34259548/how-to-disallow-access-to-all-dot-directories-except-well-known/34262192
+    location ~ /\. {
+        deny all;
+    }
+
+    location ~ /fpm-status$ {
+#        allow 127.0.0.1;
+#        deny all;
+        if ($query_string != "") {
+          return 404;
+        }
+        include fastcgi.conf;
+        fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+    }
+
+    location ^~ /wiki/images/deleted/ {
+        deny all;
+    }
+
+    rewrite ^/([0-9]+)$ node/$1 permanent;
+
+    # Special case for Mediawiki js config.
+    location ^~ /wiki/MediaWiki:Common.js {
+        error_page 418 = @wiki; return 418;
+    }
+
+    # All static wiki files will be served directly.
+    # (Or at least tried to be served. There's a special case with /wiki/Файл:something.jpg.)
+    location ~* /wiki/.+\.(?:css|cur|js|jpe?g|gif|htc|ico|png|html|xml|otf|ttf|eot|woff2?|svg)$ {
+        access_log off;
+        expires 14d;
+
+        # No need to bleed constant updates. Send the all shebang in one fell swoop.
+        tcp_nodelay off;
+
+        # Set the OS file cache.
+        open_file_cache max=3000 inactive=120s;
+        open_file_cache_valid 45s;
+        open_file_cache_min_uses 2;
+        open_file_cache_errors off;
+
+        try_files $uri @wiki;
+    }
+
+    # All static drupal files will be served directly.
+    location ~* ^(?:/robots\.txt|.+\.(?:css|cur|js|jpe?g|gif|htc|ico|png|html|xml|otf|ttf|eot|woff2?|svg))$ {
+        access_log off;
+        expires 14d;
+
+        # No need to bleed constant updates. Send the all shebang in one fell swoop.
+        tcp_nodelay off;
+
+        # Set the OS file cache.
+        open_file_cache max=3000 inactive=120s;
+        open_file_cache_valid 45s;
+        open_file_cache_min_uses 2;
+        open_file_cache_errors off;
+
+        try_files $uri @drupal;
+    }
+
+    # Replicate the Apache <FilesMatch> directive of Drupal standard ## .htaccess.
+    location ~* ^(?:.+\.(?:htaccess|make|txt|engine|inc|info|install|module|profile|po|pot|sh|.*sql|test|theme|tpl(?:\.php)?|xtmpl)|code-style\.pl|/Entries.*|/Repository|/Root|/Tag|/Template)$ {
+        return 404;
+    }
+
+    location / {
+        try_files $uri $uri/index.html @drupal_cache;
+    }
+
+    # This will try to see if we have a boost file in place. No harm done if this is not used.
+    location @drupal_cache {
+        # queries, drupal cookies, or not GET methods, all require PHP processing.
+        if ($query_string ~ ".+") {
+          return 405;
+        }
+        if ($http_cookie ~ "DRUPAL_UID" ) {
+          return 405;
+        }
+        if ($request_method !~ ^(GET|HEAD)$ ) {
+          return 405;
+        }
+        error_page 405 = @drupal;
+
+        # Drupal uses 1978
+        add_header Expires "Tue, 22 Sep 1974 08:00:00 GMT";
+        add_header Cache-Control "must-revalidate, post-check=0, pre-check=0";
+        add_header X-Cached-By "Boost";
+        try_files /cache/normal/$host/${uri}_.html @drupal;
+        # try_files /cache/normal/$host/${uri}_.html /cache/perm/$host/${uri}_.css /cache/perm/$host/${uri}_.js /cache/$host/0$uri.html /cache/$host/0${uri}/index.html @drupal;
+    }
+
+    location @drupal {
+        rewrite ^/(.*)$ /index.php?q=$1 last;
+    }
+
+    # Wiki upload directory doesn't allow PHP execution.
+    location ~ /wiki/images/.*\.php$ {
+        deny all;
+    }
+
+    location /wiki {
+        if ($request_uri ~ ^/wiki/images)     { break; }
+        if ($request_uri ~ ^/wiki/resources)  { break; }
+        if ($request_uri ~ ^/wiki/index\.php) { break; }
+        if ($request_uri ~ ^/wiki/load\.php)  { break; }
+        error_page 418 = @wiki; return 418;
+    }
+
+    location @wiki {
+        rewrite ^/wiki/(.+)$ /wiki/index.php?title=$1 last;
+    }
+
+    # Normalize /forum url.
+    rewrite ^/forum/?$ /forum/index.php permanent;
+
+    # Fixes forum urls with commas.
+    rewrite ^/forum/index\.php/([a-z]+),([0-9]+)\.(\w+)/(\w+),(\w+)/(\w+)\.html /forum/index.php?$1=$2.$3&$4=$5&$6 permanent;
+    rewrite ^/forum/index\.php/([a-z]+),([0-9]+)\.(\w+)/(\w+),(\w+)\.html /forum/index.php?$1=$2.$3&$4=$5 permanent;
+    rewrite ^/forum/index\.php/([a-z]+),([0-9]+)\.(\w+)/(\w+)/(\w+)\.html /forum/index.php?$1=$2.$3&$4&$5 permanent;
+    rewrite ^/forum/index\.php/([a-z]+),([0-9]+)\.(\w+)/(\w+)\.html /forum/index.php?$1=$2.$3&$4 permanent;
+    rewrite ^/forum/index\.php/([a-z]+),([0-9]+)\.(\w+)\.html /forum/index.php?$1=$2.$3 permanent;
+    rewrite ^/forum/index\.php/([a-z]+),([0-9]+\.\d)\.(\w+)\.html /forum/index.php?$1=$2.$3 permanent;
+    rewrite ^/forum/index\.php/([a-z]+),([0-9]+)/(\w+),(\w+)\.html /forum/index.php?$1=$2&$3=$4 permanent;
+
+    # Use PHP 7.1 for everything.
+    # (If several versions of PHP will become necessary again, create multiple virtual locations and choose based on regexes.)
+    location ~ \.php$ {
+        try_files $uri =404;
+        error_page 418 = @php71; return 418;
+    }
+
+    location @php71 {
+        include snippets/fastcgi-php.conf;
+        fastcgi_buffer_size 32k;
+        fastcgi_buffers 4 32k;
+        fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+    }
+}

@@ -26,3 +26,6 @@ lw:
     extensions:
       slack_notifications:
         webhook: "{{ vault.lw.wiki.extensions.slack_notifications.webhook }}"
+
+  website:
+    domain: lesswrong.ru

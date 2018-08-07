@@ -1,0 +1,6 @@
+- name: Install nginx config
+  include_role:
+    name: nginx-site
+  vars:
+    nginx_template: nginx
+    nginx_site: "{{lw.website.domain}}"
