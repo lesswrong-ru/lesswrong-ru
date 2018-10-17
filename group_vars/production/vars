@@ -29,3 +29,8 @@ lw:
 
   website:
     domain: lesswrong.ru
+
+certbot:
+  aws:
+    id: "{{vault.certbot.aws.id}}"
+    secret: "{{vault.certbot.aws.secret}}"
