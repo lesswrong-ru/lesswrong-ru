@@ -31,6 +31,7 @@ lw:
     domain: lesswrong.ru
 
 certbot:
+  email: me@berekuk.ru
   aws:
     id: "{{vault.certbot.aws.id}}"
     secret: "{{vault.certbot.aws.secret}}"

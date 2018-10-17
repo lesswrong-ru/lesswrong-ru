@@ -1,3 +1,12 @@
+- name: LW cert
+  include_role:
+    name: ssl
+  vars:
+    certname: lesswrong.ru
+    domains:
+      - "lesswrong.ru"
+      - "*.lesswrong.ru"
+
 - name: Install nginx config
   include_role:
     name: nginx-site
