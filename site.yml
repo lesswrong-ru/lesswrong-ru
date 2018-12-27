@@ -11,6 +11,7 @@
     - { role: clippy, tags: clippy }
     - { role: wiki, tags: wiki }
     - { role: website, tags: website }
+    - { role: lw-cert, tags: cert }
 
 - hosts: slack
   become_user: berekuk

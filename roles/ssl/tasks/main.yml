@@ -19,9 +19,21 @@
     src: aws.config
     dest: /srv/certbot.aws.config
 
+- name: check for certificates
+  become_user: root
+  stat:
+    path: /etc/letsencrypt/live/{{certname}}
+  register: certbot_domain_configured
+
 - name: get certificates
   when: certbot_domain_configured.stat.exists == False
   become_user: root
   command: /srv/certbot-auto certonly -n -d {{ domains|join(' -d ') }} --cert-name {{certname}} --preferred-challenges dns-01 --server https://acme-v02.api.letsencrypt.org/directory --email {{certbot.email}} --dns-route53 --post-hook "service nginx restart"
   environment:
     AWS_CONFIG_FILE: /srv/certbot.aws.config
+
+- name: certbot crontab
+  become_user: root
+  template:
+    src: crontab
+    dest: /etc/cron.d/certbot
