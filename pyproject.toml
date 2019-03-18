@@ -1,11 +1,11 @@
-[[source]]
+[tool.poetry]
+name = "lesswrong-ru-deploy"
+version = "0.1.0"
+description = ""
+authors = ["Vyacheslav Matyukhin <me@berekuk.ru>"]
 
-url = "https://pypi.python.org/simple"
-verify_ssl = true
-name = "pypi"
-
-
-[packages]
+[tool.poetry.dependencies]
+python = "^2.7"
 
 ansible = "==2.4.3.0"
 "asn1crypto" = "==0.24.0"
@@ -23,12 +23,3 @@ pycparser = "==2.18"
 pynacl = "==1.2.1"
 pyyaml = "==3.12"
 six = "==1.11.0"
-
-
-[dev-packages]
-
-
-
-[requires]
-
-python_version = "2.7"
