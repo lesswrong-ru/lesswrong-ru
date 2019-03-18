@@ -33,14 +33,14 @@ Ansible - это система управления конфигурациям�
 
 ## Как настроить
 
-1. Убедитесь, что у вас установлен python2.7 и virtualenv.
-2. `virtualenv venv`
-3. `. ./venv/bin/activate`
-4. `pip install -r ./requirements.txt`
+1. Убедитесь, что у вас установлен python2.7.
+2. Установите [poetry](https://poetry.eustace.io/).
+3. `poetry install`
+4. `poetry shell`
 
 ## Как использовать
 
-`ansible-playbook site.yml` (обязательно при активированном virtualenv).
+`ansible-playbook site.yml` (при активированном poetry shell).
 
 Если вы хотите запустить только часть конфигов: `ansible-playbook site.yml --tags TAG`.
 
