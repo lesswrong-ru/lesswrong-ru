@@ -2,13 +2,14 @@ lw:
   clippy:
     repo: https://github.com/lesswrong-ru/clippy.git
     token: "{{vault.lw.clippy.token}}" # deprecated
-    verification_token: "{{vault.lw.clippy.verification_token}}"
+    signing_secret: "{{vault.lw.clippy.signing_secret}}"
     workplace_token: "{{vault.lw.clippy.workplace_token}}"
     domain: clippy.lesswrong.ru
     cert: lesswrong.ru
     port: 5008
     srv: /srv/clippy
     data: /data/clippy
+    gpt2_host: http://localhost:9000
 
   wiki:
     srv: /srv/lesswrong.ru/wiki

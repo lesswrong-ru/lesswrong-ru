@@ -1,0 +1,52 @@
+- name: Install pyenv
+  shell: curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+  args:
+    creates: ~/.pyenv/bin/pyenv
+
+- name: Add pyenv to bashrc
+  lineinfile: >
+    dest=~/.profile
+    state=present
+    create=yes
+    line="{{ item }}"
+  with_items:
+    - "export PYENV_ROOT=\"$HOME/.pyenv\""
+    - "export PATH=\"$PYENV_ROOT/bin:$PATH\""
+    - "eval \"$(pyenv init -)\""
+
+- name: Install pyenv build deps
+  become_user: root
+  apt:
+    name: "{{item}}"
+  with_items:
+    - make
+    - build-essential
+    - libssl-dev
+    - zlib1g-dev
+    - libbz2-dev
+    - libreadline-dev
+    - libsqlite3-dev
+    - wget
+    - curl
+    - llvm
+    - libncurses5-dev
+    - libncursesw5-dev
+    - xz-utils
+    - tk-dev
+    - libffi-dev
+    - liblzma-dev
+    - python-openssl
+
+- name: Install python{{python_version}}
+  shell: . ~/.profile && pyenv install {{python_version}} -s
+  args:
+    executable: /bin/bash
+
+- name: Install poetry
+  shell: curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+
+- name: Install project with poetry
+  shell: . ~/.profile && poetry install --no-dev
+  args:
+    executable: /bin/bash
+    chdir: "{{dir}}"

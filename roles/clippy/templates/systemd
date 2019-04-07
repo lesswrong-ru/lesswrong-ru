@@ -7,7 +7,7 @@ User=lw
 Restart=always
 WorkingDirectory={{lw.clippy.srv}}
 EnvironmentFile={{lw.clippy.srv}}/env
-ExecStart=/usr/local/bin/pipenv run ./clippy.py
+ExecStart=/home/lw/.poetry/bin/poetry run ./run_clippy.py
 
 [Install]
 WantedBy=multi-user.target

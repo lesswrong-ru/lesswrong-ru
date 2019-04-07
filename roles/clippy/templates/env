@@ -1,3 +1,5 @@
-SLACK_VERIFICATION_TOKEN={{lw.clippy.verification_token}}
+SLACK_SIGNING_SECRET={{lw.clippy.signing_secret}}
 SLACK_WORKPLACE_TOKEN={{lw.clippy.workplace_token}}
 PORT={{lw.clippy.port}}
+GPT2_HOST={{lw.clippy.gpt2_host}}
+PATH=/home/lw/.pyenv/shims:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

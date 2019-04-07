@@ -24,11 +24,12 @@
   notify:
     - restart app
 
-- name: Set up a pipenv environment
+- name: Set up a poetry environment
   include_role:
-    name: pipenv
+    name: poetry
   vars:
     dir: "{{lw.clippy.srv}}"
+    python_version: 3.7.2
   notify: restart app
 
 - name: Install systemd config
