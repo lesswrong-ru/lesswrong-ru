@@ -1,1 +1,1 @@
-0 */12 * * * root . /opt/eff.org/certbot/venv/bin/activate && AWS_CONFIG_FILE=/srv/certbot.aws.config /srv/certbot-auto renew
+0 */12 * * * root AWS_CONFIG_FILE=/srv/certbot.aws.config /srv/certbot-auto renew
