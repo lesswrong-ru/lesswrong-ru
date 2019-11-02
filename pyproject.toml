@@ -1,25 +1,14 @@
 [tool.poetry]
 name = "lesswrong-ru-deploy"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Vyacheslav Matyukhin <me@berekuk.ru>"]
 
 [tool.poetry.dependencies]
-python = "^2.7"
+python = "^3.7"
 
-ansible = "==2.4.3.0"
-"asn1crypto" = "==0.24.0"
-bcrypt = "==3.1.4"
-cffi = "==1.11.4"
-cryptography = "==2.1.4"
-"enum34" = "==1.1.6"
-idna = "==2.6"
-ipaddress = "==1.0.19"
-"jinja2" = "==2.10"
-markupsafe = "==1.0"
-paramiko = "==2.4.0"
-"pyasn1" = "==0.4.2"
-pycparser = "==2.18"
-pynacl = "==1.2.1"
-pyyaml = "==3.12"
-six = "==1.11.0"
+ansible = "^2.8"
+
+jinja2 = "*"
+PyYAML = "*"
+cryptography = "*"

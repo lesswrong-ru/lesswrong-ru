@@ -1,0 +1,19 @@
+- name: node-exporter from cloudalchemy
+  include_role:
+    name: cloudalchemy.node-exporter
+    apply:
+      become_user: root
+  vars:
+    node_exporter_version: 0.18.1
+
+# TODO - this part is copied from kocherga's node_exporter role; 
+# need to replace the variables with correct local values
+
+- name: Allow access from Kocherga prometheus server
+  become_user: root
+  ufw:
+    rule: allow
+    port: 9100
+    proto: tcp
+    src: "{{ hostvars[item]['ansible_facts']['eth0']['ipv4']['address'] }}"
+  loop: "{{ groups['kocherga_prometheus'] }}"

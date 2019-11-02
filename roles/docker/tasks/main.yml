@@ -1,0 +1,48 @@
+- name: add repo key
+  become_user: root
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+
+- name: add repo
+  become_user: root
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+
+- name: install docker packages
+  become_user: root
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+
+- name: Add Docker ufw config
+  become_user: root
+  template:
+    src: docker.ufw
+    dest: /etc/ufw/applications.d/docker
+
+- name: Allow Docker in ufw
+  become_user: root
+  ufw:
+    rule: allow
+    name: Docker
+
+- name: Install docker-compose
+  become_user: root
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.23.2/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: 0755
+
+- name: Prune old docker data
+  become_user: root
+  cron:
+    cron_file: "docker-maintenance"
+    name: "prune docker data"
+    minute: "25"
+    hour: "4"
+    user: "root"
+    job: '/usr/bin/docker system prune -f'

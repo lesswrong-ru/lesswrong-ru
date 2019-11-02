@@ -29,10 +29,9 @@
   with_items:
     - https://extdist.wmflabs.org/dist/skins/MinervaNeue-REL1_30-14d7fdf.tar.gz
 
-- name: install {{item.name}} extension
-  become_user: root
+- name: "install {{item.name}} extension"
   include_tasks: extension.yml
-  with_items:
+  loop:
     - name: SlackNotifications
       url: https://github.com/kulttuuri/slack_mediawiki/archive/1.11.tar.gz
       path: slack_mediawiki-1.11/SlackNotifications

@@ -1,11 +1,4 @@
-- name: Allow SSH
-  become_user: root
-  ufw:
-    rule: allow
-    name: OpenSSH
+- include_tasks: tasks.yml
+  when: isdef_firewall_role_performed is not defined
 
-- name: Reject everything
-  become_user: root
-  ufw:
-    state: enabled
-    policy: reject
+- set_fact: isdef_firewall_role_performed=1

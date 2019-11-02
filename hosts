@@ -3,3 +3,9 @@ lesswrong.ru
 
 [slack]
 slack.lesswrong.ru
+
+[next]
+next.lesswrong.ru ansible_user=root
+
+[kocherga_prometheus]
+prometheus.team.kocherga.club

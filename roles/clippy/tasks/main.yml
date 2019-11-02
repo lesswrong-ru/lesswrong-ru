@@ -30,7 +30,6 @@
   vars:
     dir: "{{lw.clippy.srv}}"
     python_version: 3.7.2
-  notify: restart app
 
 - name: Install systemd config
   include_role:
@@ -38,8 +37,6 @@
   vars:
     template: systemd
     service: clippy
-  notify:
-    - restart app
 
 - name: Install nginx config
   include_role:

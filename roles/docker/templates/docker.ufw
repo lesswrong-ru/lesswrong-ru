@@ -1,0 +1,4 @@
+[Docker]
+title=Docker daemon
+description=Docker daemon is used remotely through swarm and docker-machine.
+ports=2376/tcp|2377/tcp|7946|4789/udp

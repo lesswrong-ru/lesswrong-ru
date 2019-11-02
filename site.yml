@@ -19,3 +19,20 @@
 
   roles:
     - { role: slack-search, tags: slack }
+
+- hosts: next
+  roles:
+    - lw # we need to create the lw user first
+
+- hosts: kocherga_prometheus
+  name: Gather facts from kocherga_prometheus
+  tasks: [ ]
+
+- hosts: next
+  become_user: lw
+  become: yes
+
+  roles:
+    - { role: firewall, tags: firewall }
+    - { role: docker, tags: docker }
+    - { role: node_exporter, tags: node_exporter }

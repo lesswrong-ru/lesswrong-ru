@@ -1,0 +1,3 @@
+[submodule "roles/cloudalchemy.node-exporter"]
+	path = roles/cloudalchemy.node-exporter
+	url = https://github.com/cloudalchemy/ansible-node-exporter

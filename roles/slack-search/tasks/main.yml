@@ -34,8 +34,6 @@
   vars:
     template: search.systemd
     service: slack-search
-  notify:
-    - Restart slack-search
 
 - name: Install systemd config for slack-elastic
   include_role:
@@ -43,5 +41,3 @@
   vars:
     template: elastic.systemd
     service: slack-elastic
-  notify:
-    - Restart slack-elastic
